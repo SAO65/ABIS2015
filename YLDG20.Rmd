@@ -1,8 +1,18 @@
+Towards an evidence-based Strategic Management for Sustainability: rethinking the measure of the outcome of healthy living in G20 nations post-2015. A reproducible research
+----------------------------------------------------
+
+__GLOBAL SUSTAINABILITY STRATEGY__
+__New models and approaches to achieve sustainable living__
+__14th ABIS ANNUAL COLLOQUIUM 2015__
 
 ### Stefano Olgiati, PhD, MS (1), Alessandro Danovi, MS (2)
 
 1.  Author Responsible For Correspondence: University of Bergamo <www.unibg.it>, Department of Quantitative Methods, via dei Caniana 2, Bergamo (ITA) 24129; tel  +39 035 20 52 638; fax +39 035 20 52 549; email <stefano.olgiati@unibg.it>
 2. University of Bergamo, Faculty of Economics, Bergamo (ITA) 24129
+
+<span style="color: red">
+__NOTICE TO FELLOW RESEARCHERS: THE WHO AS OF JULY 18, 2015, HAS UPDATED SOME DATABASES UTILIZED AS RAW DATA FOR THE TIDY DATASETS AND THE STATISTICAL INFERENCE. ACCORDINGLY, AFTER RUNNING THE PRESENT PROGRAM SOME OF THE NUMERIC FINDINGS MAY SLIGHTLY DIFFER  FROM THE FINDINGS REPORTED IN THE SUBMISSION TO 14th ABIS ANNUAL COLLOQUIUM 2015. THE AUTHORS HAVE CHOSEN NOT TO "FREEZE" THE ORIGINAL DATA SOURCE BUT TO ALLOW AUTOMATIC UPDATING OF THE RESEARCH FINDINGS IN THE HTML DOCUMENT. THIS CAN BE VERIFIED BY THE > dateDownloaded CODE IN R. THIS IS A FURTHER ADVANTAGE IN TERMS OF TRANSPARENCY OF RESEARCH REPRODUCIBILITY. THANK YOU. THE AUTHORS__
+</span>
 
 ```{r echo=FALSE, results='hide'}
 library(data.table)
@@ -18,7 +28,7 @@ Institute for Health Metrics and Evaluation (IHME) Global Burden of Disease Stud
 ### Code Book
 The following variables and definitions, based on “The Global Burden of Disease: Generating Evidence, Guiding Policy” and the World Health Organization’s Data Repository on Health Expenditure, were adopted when extracting the tidy data set from the raw data:
 
-* Life Expectancy (LE 50+): Life Expectancy at 50 is the average number of years that a person can be expected to live from age 50;
+* Life Expectancy (LE): Life Expectancy at birth is the average number of years that a person can be expected to live from age 0-1;
 
 * Health Adjusted Life Expectancy (HALE): Healthy Life Expectancy is the average number of years that a person can be expected to live in “full health”, by taking into account years lived in less than full health with disease and/or non-fatal injury ;
 
