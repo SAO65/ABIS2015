@@ -1,0 +1,173 @@
+
+### Stefano Olgiati, PhD, MS (1), Alessandro Danovi, MS (2)
+
+1.  Author Responsible For Correspondence: University of Bergamo <www.unibg.it>, Department of Quantitative Methods, via dei Caniana 2, Bergamo (ITA) 24129; tel  +39 035 20 52 638; fax +39 035 20 52 549; email <stefano.olgiati@unibg.it>
+2. University of Bergamo, Faculty of Economics, Bergamo (ITA) 24129
+
+```{r echo=FALSE, results='hide'}
+library(data.table)
+library(e1071)
+```
+
+### Raw Data
+We utilized open access data from:
+
+Institute for Health Metrics and Evaluation (IHME) Global Burden of Disease Study 2010 [GHDx]("http://ghdx.healthmetricsandevaluation.org/sites/default/files/record-attached-files/IHME_GBD_2010_HALE_BY_COUNTRY_1990_2010_Y2010M02D23.CSV");
+
+
+### Code Book
+The following variables and definitions, based on “The Global Burden of Disease: Generating Evidence, Guiding Policy” and the World Health Organization’s Data Repository on Health Expenditure, were adopted when extracting the tidy data set from the raw data:
+
+* Life Expectancy (LE 50+): Life Expectancy at 50 is the average number of years that a person can be expected to live from age 50;
+
+* Health Adjusted Life Expectancy (HALE): Healthy Life Expectancy is the average number of years that a person can be expected to live in “full health”, by taking into account years lived in less than full health with disease and/or non-fatal injury ;
+
+* Years Lived with Disability (YLD): The Years Lived with Disability is the difference between LE and HALE, where LE is always greater than or equal to HALE. It is equivalent to the number of years that people live with a health condition or its consequences or in less than full health with disease and/or non-fatal injury;
+
+### Raw Data
+Downloading data from the repositories
+
+```{r, cache=TRUE}
+
+# Getting raw data from the IHME Global Burden of Disease Study 2010
+fileURL.GBD <- "http://ghdx.healthmetricsandevaluation.org/sites/default/files/record-attached-files/IHME_GBD_2010_HALE_BY_COUNTRY_1990_2010_Y2010M02D23.CSV"
+
+download.file(fileURL.GBD, destfile="RawData/GBD.csv")
+
+dateDownloaded <- date()
+dateDownloaded
+```
+
+Reading raw data in .csv format
+````{r}
+# Raw Data
+raw.data.GBD <- read.csv("RawData/GBD.csv")
+names(raw.data.GBD)
+dim(raw.data.GBD)
+
+# Data Tables
+attach(raw.data.GBD)
+
+DT.GBD <- data.table(raw.data.GBD)
+
+tables()
+```
+
+
+### Tidy Data Set
+
+Manipulating data to generate tidy datasets
+```{r}
+# ISO 13 codes of G20 Countries for 1990/95 - 2010
+# Argentina, Australia, Brazil, Canada, China, India, Indonesia, Japan, Mexico, Russia, Saudi Arabia, South Africa, South Korea, Turkey, the United Kingdom and the United States, European Union (EU)
+
+ISO13 <- c("ARG", "AUS", "BRA", "CAN","CHN","IND","IDN","JPN","MEX","RUS","SAU","ZAF","KOR","TUR","USA", "AUT","BEL","BGR","HRV","CYP","CZE","DNK","EST","FIN","FRA","DEU","GRC","HUN","IRL","ITA","LVA","LTU","LUX","MLT","NLD","POL","PRT","ROU","SVK","SVN","ESP","SWE","GBR")
+
+length(ISO13)
+
+data.GBD.1990 <- DT.GBD[DT.GBD$year == "1990" & DT.GBD$age_name == "0-1 years" & DT.GBD$sex_name == "Both" & DT.GBD$iso3 %in% ISO13 , ]
+data.GBD.1990.ordered <- data.GBD.1990[order(ISO13), ]
+
+data.GBD.2010 <- DT.GBD[DT.GBD$year == "2010" & DT.GBD$age_name == "0-1 years" & DT.GBD$sex_name == "Both" & DT.GBD$iso3 %in% ISO13 , ]
+data.GBD.2010.ordered <- data.GBD.2010[order(ISO13), ]
+
+data.1990 <- data.frame(country=data.GBD.1990.ordered$iso3, le=data.GBD.1990.ordered$le, hale=data.GBD.1990.ordered$hale)
+
+data.2010 <- data.frame(country=data.GBD.2010.ordered$iso3, le=data.GBD.2010.ordered$le, hale=data.GBD.2010.ordered$hale)
+
+# Years Lived with Disease in G20 Countries for 1990 - 2010
+yld.1990 <- data.1990$le - data.1990$hale
+yld.2010 <- data.2010$le - data.2010$hale
+
+# Tidy Dataset
+tidy.data <- data.frame(country=data.2010$country, le_1990=data.1990$le,  le_2010=data.2010$le, hale_1990 = data.1990$hale, hale_2010 = data.2010$hale, yld_1990=yld.1990, yld_2010=yld.2010)
+tidy.data
+
+attach(tidy.data)
+
+# Saving Tidy Dataset to .csv file
+write.csv(tidy.data, "YLDOutput.csv")
+```
+
+### Exploratory Data Analysis
+```{r}
+# Data for background and rationale
+summary(le_1990)
+mad(le_1990)
+skewness(le_1990)
+kurtosis(le_1990)
+
+summary(le_2010)
+mad(le_2010)
+skewness(le_2010)
+kurtosis(le_2010)
+
+summary(yld_1990)
+mad(yld_1990)
+skewness(yld_1990)
+kurtosis(yld_1990)
+
+summary(yld_2010)
+mad(yld_2010)
+skewness(yld_2010)
+kurtosis(yld_2010)
+
+# PLOTS
+par(mfrow=c(1,2))
+hist(le_2010)
+hist(yld_2010)
+
+
+# Strip Charts
+par(mfrow=c(1,2))
+strip.data.1 <- data.frame(le_1990, le_2010)
+stripchart(strip.data.1, 
+           vertical=TRUE, 
+           col=1:2, 
+           method="jitter")
+abline(h=c(median(le_1990), median(le_2010)),
+       col=1:2)
+summary(strip.data.1)
+
+strip.data.2 <- data.frame(yld_1990, yld_2010)
+stripchart(strip.data.2, 
+           vertical=TRUE, 
+           col=1:2, 
+           method="jitter")
+abline(h=c( median(yld_1990), median(yld_2010)),
+       col=1:2)
+summary(strip.data.2)
+```
+
+### Model and Multiple Linear Regression
+````{r}
+# Linear regression
+par(mfrow=c(1,2))
+
+model1 <- lm(yld_1990 ~ le_1990)
+plot(le_1990, yld_1990)
+abline(model1, col = "red")
+summary(model1)
+confint(model1)
+
+
+model2 <- lm(yld_2010 ~ le_2010)
+plot(le_2010, yld_2010)
+abline(model2, col = "red")
+summary(model2)
+confint(model2)
+
+# 95% CI in month
+slope <- model2$coefficients[2]
+slopeInMonths <- slope * 12
+slopeInMonths
+lower <- confint(model2)[2]
+lowerInMonths <- lower * 12
+lowerInMonths
+upper <- confint(model2)[4]
+upperInMonths <- upper * 12
+upperInMonths
+
+```
+
+ 
